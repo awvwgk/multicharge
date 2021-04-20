@@ -17,6 +17,8 @@ module multicharge_param
    use mctc_env, only : wp
    use mctc_io, only : structure_type
    use multicharge_model, only : mchrg_model_type, new_mchrg_model
+   use multicharge_coulomb, only : mchrg_coulomb_type
+   use multicharge_coulomb_gaussian, only : mchrg_gaussian_coulomb, new_gaussian_coulomb
    use multicharge_param_eeq2019, only : get_eeq_chi, get_eeq_eta, &
       & get_eeq_rad, get_eeq_kcn
    implicit none
@@ -33,13 +35,18 @@ subroutine new_eeq2019_model(mol, model)
    type(mchrg_model_type), intent(out) :: model
 
    real(wp), allocatable :: chi(:), eta(:), kcn(:), rad(:)
+   type(mchrg_gaussian_coulomb), allocatable :: coulomb
 
    chi = get_eeq_chi(mol%num)
    eta = get_eeq_eta(mol%num)
    kcn = get_eeq_kcn(mol%num)
    rad = get_eeq_rad(mol%num)
 
-   call new_mchrg_model(model, chi=chi, rad=rad, eta=eta, kcn=kcn)
+   call new_mchrg_model(model, chi=chi, eta=eta, kcn=kcn)
+
+   allocate(coulomb)
+   call new_gaussian_coulomb(coulomb, rad=rad)
+   call move_alloc(coulomb, model%coulomb)
 
 end subroutine new_eeq2019_model
 

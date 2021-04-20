@@ -19,6 +19,8 @@ program tester
    use mctc_env, only : get_argument
    use mctc_env_testing, only : run_testsuite, new_testsuite, testsuite_type, &
       & select_suite, run_selected
+   use test_gaussian, only : collect_gaussian
+   use test_klopman, only : collect_klopman
    use test_model, only : collect_model
    use test_ncoord, only : collect_ncoord
    use test_pbc, only : collect_pbc
@@ -32,6 +34,8 @@ program tester
    stat = 0
 
    testsuites = [ &
+      & new_testsuite("gaussian", collect_gaussian), &
+      & new_testsuite("klopman", collect_klopman), &
       & new_testsuite("model", collect_model), &
       & new_testsuite("ncoord", collect_ncoord), &
       & new_testsuite("pbc", collect_pbc), &

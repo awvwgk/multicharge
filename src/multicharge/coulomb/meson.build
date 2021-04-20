@@ -13,21 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-subdir('coulomb')
-subdir('data')
-subdir('param')
-
 srcs += files(
-  'blas.f90',
-  'coulomb.f90',
-  'cutoff.f90',
-  'data.f90',
-  'ewald.f90',
-  'lapack.f90',
-  'model.f90',
-  'ncoord.f90',
-  'output.f90',
-  'param.f90',
-  'version.f90',
-  'wignerseitz.f90',
+  'cache.f90',
+  'gaussian.f90',
+  'klopman.f90',
+  'type.f90',
 )

@@ -29,6 +29,8 @@ endif
 mstore_dep = mstore_prj.get_variable('mstore_dep')
 
 tests = [
+  'gaussian',
+  'klopman',
   'model',
   'ncoord',
   'pbc',

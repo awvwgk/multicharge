@@ -19,6 +19,8 @@ module multicharge_output
    use mctc_io_convert, only : autoaa
    use mctc_io_constants, only : pi
    use multicharge_model, only : mchrg_model_type
+   use multicharge_coulomb_klopman, only : mchrg_klopman_coulomb
+   use multicharge_coulomb_gaussian, only : mchrg_gaussian_coulomb
    implicit none
    private
 
@@ -42,13 +44,32 @@ subroutine write_ascii_model(unit, mol, model)
 
    write(unit, '(a, ":")') "Charge model parameter"
    write(unit, '(54("-"))')
-   write(unit, '(a4,5x,*(1x,a10))') "Z", "chi/Eh", "kcn/Eh", "eta/Eh", "rad/AA"
-   write(unit, '(54("-"))')
-   do isp = 1, mol%nid
-      write(unit, '(i4, 1x, a4, *(1x,f10.4))') &
-         & mol%num(isp), mol%sym(isp), model%chi(isp), model%kcn(isp), &
-         & model%eta(isp) + sqrt2pi/model%rad(isp), model%rad(isp) * autoaa
-   end do
+   select type(coulomb => model%coulomb)
+   class is (mchrg_gaussian_coulomb)
+      write(unit, '(a4,5x,*(1x,a10))') "Z", "chi/Eh", "kcn/Eh", "eta/Eh", "rad/AA"
+      write(unit, '(54("-"))')
+      do isp = 1, mol%nid
+         write(unit, '(i4, 1x, a4, *(1x,f10.4))') &
+            & mol%num(isp), mol%sym(isp), model%chi(isp), model%kcn(isp), &
+            & model%eta(isp) + sqrt2pi/coulomb%rad(isp), coulomb%rad(isp) * autoaa
+      end do
+   class is (mchrg_klopman_coulomb)
+      write(unit, '(a4,5x,*(1x,a10))') "Z", "chi/Eh", "kcn/Eh", "eta/Eh", "gam/Eh"
+      write(unit, '(54("-"))')
+      do isp = 1, mol%nid
+         write(unit, '(i4, 1x, a4, *(1x,f10.4))') &
+            & mol%num(isp), mol%sym(isp), model%chi(isp), model%kcn(isp), &
+            & model%eta(isp) + coulomb%hardness(isp, isp), coulomb%hardness(isp, isp)
+      end do
+   class default
+      write(unit, '(a4,5x,*(1x,a10))') "Z", "chi/Eh", "kcn/Eh", "eta/Eh"
+      write(unit, '(54("-"))')
+      do isp = 1, mol%nid
+         write(unit, '(i4, 1x, a4, *(1x,f10.4))') &
+            & mol%num(isp), mol%sym(isp), model%chi(isp), model%kcn(isp), &
+            & model%eta(isp)
+      end do
+   end select
    write(unit, '(54("-"),/)')
 
 end subroutine write_ascii_model
